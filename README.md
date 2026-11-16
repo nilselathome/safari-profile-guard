@@ -4,6 +4,12 @@ A small macOS menu bar utility that watches for new Safari windows opened on
 your "Work" profile and offers to switch them to "Home" — useful if Safari
 tends to pick the wrong profile for new windows.
 
+## Vibe coded
+You should NOT install this on any computer that has sensitive data.
+The code has not been properly reviewed by me, or anyone else (human).
+
+USE AT OWN RISK.
+
 When it detects a watched-profile window, it flashes a red border around
 your screen(s) and shows a dialog: "Switch to Home?".
 
