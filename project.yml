@@ -9,6 +9,8 @@ targets:
     platform: macOS
     sources:
       - path: Sources/SafariProfileGuard
+      - path: AppIcon.icns
+        buildPhase: resources
     info:
       path: Generated/Info.plist
       properties:
@@ -16,6 +18,7 @@ targets:
         NSAccessibilityUsageDescription: "SafariProfileGuard needs Accessibility access to see which Safari profile a new window is using, and to switch it when you ask it to."
         CFBundleShortVersionString: "1.0"
         CFBundleVersion: "1"
+        CFBundleIconFile: AppIcon
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.nilsel.SafariProfileGuard

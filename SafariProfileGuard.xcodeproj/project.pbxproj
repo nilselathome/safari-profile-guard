@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		241DFCC04D61F98CCC2E078D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE039A4D2F1DADC1DDFF037 /* AppDelegate.swift */; };
 		2C88C3DFD35501F293F4B816 /* OverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FF9C20001D1C98778CD6429 /* OverlayWindow.swift */; };
+		2CF3D15B43DB82E83DC10883 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = CB060FD761E71EFC9D403259 /* AppIcon.icns */; };
 		2F4E869CE1AC697293CB9395 /* AXHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28E60A516ABE114B0A287B6 /* AXHelpers.swift */; };
 		3638C86F0369C9FC212B2DA8 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378E3AE8AB319E7B11A67F8F /* Preferences.swift */; };
 		3FC93A0C424E69903591E6BE /* SafariWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EE3023F690FFA0D36E00E86 /* SafariWatcher.swift */; };
@@ -22,6 +23,7 @@
 		378E3AE8AB319E7B11A67F8F /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		8EE3023F690FFA0D36E00E86 /* SafariWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWatcher.swift; sourceTree = "<group>"; };
 		A28E60A516ABE114B0A287B6 /* AXHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AXHelpers.swift; sourceTree = "<group>"; };
+		CB060FD761E71EFC9D403259 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		FD22F821A7D9DB4FF638C0EF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -51,6 +53,7 @@
 		E1D386F361388DE2ECDF4353 = {
 			isa = PBXGroup;
 			children = (
+				CB060FD761E71EFC9D403259 /* AppIcon.icns */,
 				C52BD555056ECA855D5E630A /* SafariProfileGuard */,
 				4BBB9517AC0490DC501BB6B7 /* Products */,
 			);
@@ -64,6 +67,7 @@
 			buildConfigurationList = 1D5FB59083466B7BDC6FEA5C /* Build configuration list for PBXNativeTarget "SafariProfileGuard" */;
 			buildPhases = (
 				0A5032A8278DFC23A7CC9BA9 /* Sources */,
+				47085E937AB78CCB1401742C /* Resources */,
 			);
 			buildRules = (
 			);
@@ -108,6 +112,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		47085E937AB78CCB1401742C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2CF3D15B43DB82E83DC10883 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		0A5032A8278DFC23A7CC9BA9 /* Sources */ = {
