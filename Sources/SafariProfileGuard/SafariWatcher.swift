@@ -9,7 +9,7 @@ final class SafariWatcher {
 
     private var observer: AXObserver?
     private var observedPID: pid_t?
-    private var handledWindowIDs = Set<String>()
+    private var handledWindowIDs = Set<CGWindowID>()
 
     func start() {
         NSWorkspace.shared.notificationCenter.addObserver(
@@ -59,13 +59,45 @@ final class SafariWatcher {
             return
         }
 
-        let appElement = AXUIElementCreateApplication(pid)
-        let refcon = Unmanaged.passUnretained(self).toOpaque()
-        AXObserverAddNotification(newObserver, appElement, kAXWindowCreatedNotification as CFString, refcon)
         CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(newObserver), .defaultMode)
-
         observer = newObserver
         observedPID = pid
+
+        registerForWindowCreation(pid: pid, observer: newObserver, attempt: 0)
+    }
+
+    /// Right after Safari (re)launches, AXObserverAddNotification can keep failing for a
+    /// while — either transiently (kAXErrorCannotComplete, before Safari's AX server is
+    /// ready) or because Accessibility permission isn't granted yet (kAXErrorAPIDisabled,
+    /// while the user is still looking at the system prompt). Retry until it succeeds,
+    /// giving the permission case much more time since it's waiting on the user, then
+    /// catch up on whatever windows already exist — Safari usually restores them before
+    /// we're done registering, and kAXWindowCreatedNotification never fires for those.
+    private func registerForWindowCreation(pid: pid_t, observer: AXObserver, attempt: Int) {
+        guard observedPID == pid else { return }
+
+        let appElement = AXUIElementCreateApplication(pid)
+        let refcon = Unmanaged.passUnretained(self).toOpaque()
+        let result = AXObserverAddNotification(observer, appElement, kAXWindowCreatedNotification as CFString, refcon)
+
+        guard result == .success else {
+            let isWaitingOnPermission = result == .apiDisabled
+            let maxAttempts = isWaitingOnPermission ? 150 : 10
+            let interval = isWaitingOnPermission ? 2.0 : 0.5
+
+            guard attempt < maxAttempts else {
+                NSLog("SafariProfileGuard: failed to register for window-created notifications (result=\(result.rawValue))")
+                return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + interval) { [weak self] in
+                self?.registerForWindowCreation(pid: pid, observer: observer, attempt: attempt + 1)
+            }
+            return
+        }
+
+        for window in AX.windows(appElement) {
+            inspect(window: window)
+        }
     }
 
     private func detach() {
@@ -74,6 +106,8 @@ final class SafariWatcher {
         }
         observer = nil
         observedPID = nil
+        // Window IDs belonged to the Safari process that just went away.
+        handledWindowIDs.removeAll()
     }
 
     private func handleNotification(element: AXUIElement, name: String) {
@@ -87,12 +121,14 @@ final class SafariWatcher {
     private func inspect(window: AXUIElement) {
         guard Preferences.isEnabled else { return }
         guard let profile = SafariProfile.currentProfile(for: window) else { return }
-
-        let windowID = AX.identifier(window) ?? String(describing: window)
-        guard !handledWindowIDs.contains(windowID) else { return }
         guard profile.caseInsensitiveCompare(Preferences.watchedProfile) == .orderedSame else { return }
 
-        handledWindowIDs.insert(windowID)
+        // Tie the decision (switch or keep) to this specific window: if we can
+        // identify it reliably, never ask about it twice.
+        if let windowID = AX.windowID(window) {
+            guard !handledWindowIDs.contains(windowID) else { return }
+            handledWindowIDs.insert(windowID)
+        }
         onWatchedWindowDetected?(window, profile)
     }
 }

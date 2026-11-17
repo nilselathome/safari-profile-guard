@@ -1,5 +1,12 @@
 import ApplicationServices
+import Cocoa
 import Foundation
+
+// Private but widely used (Rectangle, Amethyst, etc.) API to resolve the real
+// CGWindowID behind an AXUIElement. Swift object descriptions/pointers are not
+// a stable way to tell two windows apart, so this is what window identity relies on.
+@_silgen_name("_AXUIElementGetWindow")
+private func _AXUIElementGetWindow(_ element: AXUIElement, _ outWindow: inout CGWindowID) -> AXError
 
 enum AX {
     static func attribute(_ element: AXUIElement, _ name: String) -> AnyObject? {
@@ -10,6 +17,17 @@ enum AX {
 
     static func children(_ element: AXUIElement) -> [AXUIElement] {
         (attribute(element, kAXChildrenAttribute) as? [AXUIElement]) ?? []
+    }
+
+    static func windows(_ element: AXUIElement) -> [AXUIElement] {
+        (attribute(element, kAXWindowsAttribute) as? [AXUIElement]) ?? []
+    }
+
+    /// The real, stable window identifier backing this AXUIElement, suitable for
+    /// recognizing "the same window" across separate inspections.
+    static func windowID(_ element: AXUIElement) -> CGWindowID? {
+        var windowID: CGWindowID = 0
+        return _AXUIElementGetWindow(element, &windowID) == .success ? windowID : nil
     }
 
     static func identifier(_ element: AXUIElement) -> String? {
