@@ -31,6 +31,16 @@ All of this requires Accessibility permission, which macOS will prompt for
 on first launch (System Settings → Privacy & Security → Accessibility/Device
 Control and Data Access, depending on macOS version).
 
+Because this app is only ad-hoc signed (no Apple Developer ID), macOS ties
+that Accessibility grant to the exact binary's signature rather than to the
+app itself. Every rebuild produces a new signature, so after each build the
+existing entry in that settings list silently becomes stale — it can still
+show as enabled, but the app will fail to register for window notifications
+(`AXObserverAddNotification` returns `kAXErrorAPIDisabled`). If watch mode
+stops alerting after you rebuild, remove `SafariProfileGuard.app` from that
+list (select it, click `−`) and relaunch it — it will re-prompt for
+Accessibility access, and approving that fresh prompt fixes it.
+
 ## Building & running
 
 ### From Xcode
